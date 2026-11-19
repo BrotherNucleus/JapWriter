@@ -38,6 +38,7 @@ export function createDrawingCanvas(canvas, { onChange } = {}) {
 
   const strokes = [];
   let activeStroke = null;
+  let enabled = true;
   let pixelRatio = window.devicePixelRatio || 1;
 
   function redraw() {
@@ -58,6 +59,9 @@ export function createDrawingCanvas(canvas, { onChange } = {}) {
   }
 
   function handlePointerDown(event) {
+    if (!enabled) {
+      return;
+    }
     if (event.button !== 0 && event.pointerType === "mouse") {
       return;
     }
@@ -110,6 +114,10 @@ export function createDrawingCanvas(canvas, { onChange } = {}) {
     notifyChange();
   }
 
+  function hasStrokes() {
+    return strokes.length > 0;
+  }
+
   function handlePointerUp(event) {
     if (activeStroke && canvas.hasPointerCapture(event.pointerId)) {
       strokes.push(activeStroke);
@@ -135,6 +143,11 @@ export function createDrawingCanvas(canvas, { onChange } = {}) {
   return {
     undo,
     clear,
+    hasStrokes,
+    setEnabled(value) {
+      enabled = value;
+      canvas.classList.toggle("disabled-canvas", !value);
+    },
     destroy() {
       canvas.removeEventListener("pointerdown", handlePointerDown);
       canvas.removeEventListener("pointermove", handlePointerMove);

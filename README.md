@@ -37,8 +37,14 @@ when hosted under a repository subpath.
 
 ## Project status
 
-Milestone 3 is complete: the setup screen includes the modern hiragana set,
-including voiced, semi-voiced, and small kana. Click a character to cycle
-between not selected, known, and learning. Row actions can set or clear a
-whole row. Selection is held in memory through a storage interface and is
-ready to be connected to practice prompts in the next milestone.
+Milestone 4 is complete: select hiragana, then practice matching words by
+writing each character in order. The prompt shows English meaning and romaji,
+while the Japanese word remains hidden until submission. Mark each revealed
+character right or wrong yourself, then continue to the next word. Words that
+include learning characters are prioritized, and incorrect words return sooner.
+
+The starter word list is in `data/words-hiragana.json`. It is a small,
+hand-curated list for this milestone; entries are intended to be common
+hiragana-only vocabulary and should be expanded and reviewed before a final
+release. No external dataset is used, so there is no third-party word-list
+license to record.

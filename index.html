@@ -11,17 +11,17 @@
     <main class="app-shell">
       <header class="app-header">
         <p class="eyebrow">Japanese writing practice</p>
-        <h1>Choose your hiragana</h1>
-        <p class="intro">
+        <h1 id="page-title">Choose your hiragana</h1>
+        <p id="page-intro" class="intro">
           Mark characters you know and characters you want to learn. You can
           change this selection whenever you like.
         </p>
       </header>
 
-      <section class="card setup-card" aria-labelledby="setup-title">
+      <section id="setup-screen" class="card setup-card" aria-labelledby="setup-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Milestone 3</p>
+            <p class="eyebrow">Setup</p>
             <h2 id="setup-title">Character setup</h2>
           </div>
           <p id="selection-status" class="status" role="status"></p>
@@ -39,6 +39,28 @@
           <p id="setup-message" class="status" role="status"></p>
           <button id="start-button" type="button" disabled>Start practice</button>
         </div>
+      </section>
+
+      <section id="practice-screen" class="card practice-card" aria-labelledby="practice-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Milestone 4</p>
+            <h2 id="practice-title">Write the word</h2>
+          </div>
+          <button id="back-button" class="secondary-button" type="button">Change selection</button>
+        </div>
+
+        <div id="prompt-area" class="prompt-area"></div>
+        <p id="practice-status" class="status" role="status"></p>
+
+        <div id="character-canvases" class="character-canvases"></div>
+        <div class="practice-actions">
+          <button id="next-character-button" type="button" disabled>Next character</button>
+          <button id="submit-button" type="button" disabled>Submit word</button>
+        </div>
+
+        <div id="feedback-area" class="feedback-area" hidden></div>
+        <button id="next-word-button" type="button" hidden>Next word</button>
       </section>
     </main>
     <script type="module" src="./js/main.js"></script>

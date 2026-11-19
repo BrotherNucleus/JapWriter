@@ -1,13 +1,33 @@
 import { CHARACTER_STATES, HIRAGANA_ROWS } from "./characters.js";
+import { createDrawingCanvas } from "./canvas.js";
 import { createMemoryStorage } from "./storage.js";
+import { createScheduler } from "./scheduler.js";
 import { strings } from "./strings.js";
+import { loadWords } from "./words.js";
 
 const MINIMUM_SELECTION = 3;
+const storage = createMemoryStorage();
+const setupScreen = document.querySelector("#setup-screen");
+const practiceScreen = document.querySelector("#practice-screen");
+const pageTitle = document.querySelector("#page-title");
+const pageIntro = document.querySelector("#page-intro");
 const characterGroups = document.querySelector("#character-groups");
 const selectionStatus = document.querySelector("#selection-status");
 const setupMessage = document.querySelector("#setup-message");
 const startButton = document.querySelector("#start-button");
-const storage = createMemoryStorage();
+const backButton = document.querySelector("#back-button");
+const promptArea = document.querySelector("#prompt-area");
+const practiceStatus = document.querySelector("#practice-status");
+const characterCanvases = document.querySelector("#character-canvases");
+const nextCharacterButton = document.querySelector("#next-character-button");
+const submitButton = document.querySelector("#submit-button");
+const feedbackArea = document.querySelector("#feedback-area");
+const nextWordButton = document.querySelector("#next-word-button");
+let words = [];
+let scheduler;
+let currentWord;
+let currentCharacterIndex;
+let canvasControllers = [];
 
 function getSelectedCount(selection) {
   return Object.values(selection).filter(
@@ -31,15 +51,12 @@ function createRow(row, selection) {
   const section = document.createElement("section");
   section.className = "character-row";
   section.setAttribute("aria-labelledby", `row-${row.characters[0]}`);
-
   const heading = document.createElement("div");
   heading.className = "row-heading";
-
   const title = document.createElement("h3");
   title.id = `row-${row.characters[0]}`;
   title.textContent = row.label;
   heading.append(title);
-
   const actions = document.createElement("div");
   actions.className = "row-actions";
   for (const [state, label] of [
@@ -55,25 +72,20 @@ function createRow(row, selection) {
     actions.append(action);
   }
   heading.append(actions);
-
   const characterList = document.createElement("div");
   characterList.className = "character-list";
   for (const character of row.characters) {
-    characterList.append(
-      createCharacterButton(character, selection[character])
-    );
+    characterList.append(createCharacterButton(character, selection[character]));
   }
-
   section.append(heading, characterList);
   return section;
 }
 
-function render() {
+function renderSetup() {
   const selection = storage.getSelection();
   characterGroups.replaceChildren(
     ...HIRAGANA_ROWS.map((row) => createRow(row, selection))
   );
-
   const selectedCount = getSelectedCount(selection);
   selectionStatus.textContent = strings.selection.selectedCount(
     selectedCount,
@@ -86,20 +98,124 @@ function render() {
       : strings.selection.ready;
 }
 
+function showSetup() {
+  setupScreen.hidden = false;
+  practiceScreen.hidden = true;
+  pageTitle.textContent = "Choose your hiragana";
+  pageIntro.textContent =
+    "Mark characters you know and characters you want to learn. You can change this selection whenever you like.";
+  renderSetup();
+}
+
+function createPrompt() {
+  promptArea.replaceChildren();
+  const meaning = document.createElement("p");
+  meaning.className = "prompt-meaning";
+  meaning.textContent = currentWord.meaning;
+  const reading = document.createElement("p");
+  reading.className = "prompt-reading";
+  reading.textContent = currentWord.romaji;
+  reading.setAttribute("aria-label", `Romaji: ${currentWord.romaji}`);
+  promptArea.append(meaning, reading);
+}
+
+function renderCharacterCanvases() {
+  for (const controller of canvasControllers) {
+    controller.destroy();
+  }
+  canvasControllers = [];
+  characterCanvases.replaceChildren();
+  [...currentWord.word].forEach((character, index) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "character-canvas-wrapper";
+    const label = document.createElement("span");
+    label.className = "character-number";
+    label.textContent = `${index + 1}`;
+    const canvas = document.createElement("canvas");
+    canvas.className = "practice-canvas";
+    canvas.width = 300;
+    canvas.height = 300;
+    canvas.setAttribute("aria-label", `Write character ${index + 1}`);
+    wrapper.append(label, canvas);
+    characterCanvases.append(wrapper);
+    canvasControllers.push(
+      createDrawingCanvas(canvas, {
+        onChange: () => updatePracticeControls()
+      })
+    );
+  });
+  updatePracticeControls();
+}
+
+function updatePracticeControls() {
+  const active = canvasControllers[currentCharacterIndex];
+  const isLast = currentCharacterIndex === canvasControllers.length - 1;
+  const hasCurrentStroke = active?.hasStrokes() ?? false;
+  nextCharacterButton.hidden = isLast;
+  submitButton.hidden = !isLast;
+  nextCharacterButton.disabled = !hasCurrentStroke;
+  submitButton.disabled = !hasCurrentStroke;
+  practiceStatus.textContent = `Write character ${currentCharacterIndex + 1} of ${canvasControllers.length}.`;
+  canvasControllers.forEach((controller, index) => {
+    controller.setEnabled(index === currentCharacterIndex);
+  });
+  [...characterCanvases.children].forEach((wrapper, index) => {
+    wrapper.classList.toggle("active-character", index === currentCharacterIndex);
+  });
+}
+
+function startWord() {
+  currentWord = scheduler.next(storage.getSelection());
+  if (!currentWord) {
+    setupMessage.textContent =
+      "Too few matching words. Select more characters and try again.";
+    return false;
+  }
+  currentCharacterIndex = 0;
+  setupScreen.hidden = true;
+  practiceScreen.hidden = false;
+  pageTitle.textContent = "Practice Japanese writing";
+  pageIntro.textContent =
+    "Write each character in order. The Japanese word stays hidden until you submit.";
+  feedbackArea.hidden = true;
+  nextWordButton.hidden = true;
+  createPrompt();
+  renderCharacterCanvases();
+  return true;
+}
+
+function showFeedback() {
+  const list = document.createElement("div");
+  list.className = "feedback-list";
+  const heading = document.createElement("h3");
+  heading.textContent = `Correct word: ${currentWord.word}`;
+  list.append(heading);
+  [...currentWord.word].forEach((character, index) => {
+    const item = document.createElement("div");
+    item.className = "feedback-item";
+    item.innerHTML = `<span class="feedback-character">${character}</span><span>Character ${index + 1}</span><button type="button" data-result="correct">Right</button><button type="button" data-result="incorrect">Wrong</button>`;
+    item.dataset.index = index;
+    list.append(item);
+  });
+  feedbackArea.replaceChildren(list);
+  feedbackArea.hidden = false;
+  submitButton.hidden = true;
+  nextCharacterButton.hidden = true;
+  nextWordButton.hidden = false;
+  nextWordButton.disabled = true;
+  practiceStatus.textContent = "Mark each character based on your handwriting.";
+}
+
 characterGroups.addEventListener("click", (event) => {
   const button = event.target.closest("button");
-  if (!button) {
-    return;
-  }
-
+  if (!button) return;
   const row = button.closest(".character-row");
   if (button.dataset.character) {
-    const currentState = button.dataset.state;
     const nextState = {
       [CHARACTER_STATES.unselected]: CHARACTER_STATES.known,
       [CHARACTER_STATES.known]: CHARACTER_STATES.learning,
       [CHARACTER_STATES.learning]: CHARACTER_STATES.unselected
-    }[currentState];
+    }[button.dataset.state];
     storage.setCharacterState(button.dataset.character, nextState);
   } else if (button.dataset.rowState && row) {
     storage.setCharactersState(
@@ -109,11 +225,57 @@ characterGroups.addEventListener("click", (event) => {
       button.dataset.rowState
     );
   }
-  render();
+  renderSetup();
 });
 
-startButton.addEventListener("click", () => {
-  setupMessage.textContent = strings.selection.ready;
+startButton.addEventListener("click", async () => {
+  if (words.length === 0) {
+    setupMessage.textContent = "Loading word list...";
+    try {
+      words = await loadWords();
+      scheduler = createScheduler(words);
+    } catch (error) {
+      setupMessage.textContent = error.message;
+      return;
+    }
+  }
+  startWord();
 });
 
-render();
+nextCharacterButton.addEventListener("click", () => {
+  currentCharacterIndex += 1;
+  updatePracticeControls();
+});
+
+submitButton.addEventListener("click", () => {
+  showFeedback();
+});
+
+feedbackArea.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-result]");
+  if (!button) return;
+  const item = button.closest(".feedback-item");
+  item.dataset.result = button.dataset.result;
+  item.querySelectorAll("button").forEach((control) => {
+    control.disabled = true;
+  });
+  const allMarked = [...feedbackArea.querySelectorAll(".feedback-item")]
+    .every((feedbackItem) => feedbackItem.dataset.result);
+  if (allMarked) {
+    const correct = [...feedbackArea.querySelectorAll(".feedback-item")]
+      .every((feedbackItem) => feedbackItem.dataset.result === "correct");
+    scheduler.record(currentWord, correct);
+    nextWordButton.disabled = false;
+    practiceStatus.textContent = correct
+      ? "All characters marked correct."
+      : "Some characters need more practice. They will return soon.";
+  }
+});
+
+nextWordButton.addEventListener("click", () => {
+  startWord();
+});
+
+backButton.addEventListener("click", showSetup);
+
+renderSetup();
