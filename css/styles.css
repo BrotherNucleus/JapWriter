@@ -272,7 +272,7 @@ h3 {
 
 .character-canvases {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -280,6 +280,8 @@ h3 {
 .character-canvas-wrapper {
   position: relative;
   min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
   opacity: 0.5;
 }
 
@@ -305,7 +307,8 @@ h3 {
 .practice-canvas {
   display: block;
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
+  max-width: 100%;
   border: 2px solid #d1d5db;
   border-radius: 0.5rem;
   background:
@@ -448,5 +451,9 @@ h3 {
   .setup-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .character-canvases {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

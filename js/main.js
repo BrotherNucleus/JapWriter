@@ -144,6 +144,7 @@ function renderCharacterCanvases() {
       })
     );
   });
+  canvasControllers.forEach((controller) => controller.resize());
   updatePracticeControls();
 }
 

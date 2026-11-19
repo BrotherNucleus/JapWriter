@@ -138,12 +138,17 @@ export function createDrawingCanvas(canvas, { onChange } = {}) {
   canvas.addEventListener("pointerup", handlePointerUp);
   canvas.addEventListener("pointercancel", handlePointerCancel);
   window.addEventListener("resize", redraw);
+  const resizeObserver = new ResizeObserver(redraw);
+  resizeObserver.observe(canvas);
   redraw();
 
   return {
     undo,
     clear,
     hasStrokes,
+    resize() {
+      redraw();
+    },
     setEnabled(value) {
       enabled = value;
       canvas.classList.toggle("disabled-canvas", !value);
@@ -154,6 +159,7 @@ export function createDrawingCanvas(canvas, { onChange } = {}) {
       canvas.removeEventListener("pointerup", handlePointerUp);
       canvas.removeEventListener("pointercancel", handlePointerCancel);
       window.removeEventListener("resize", redraw);
+      resizeObserver.disconnect();
     }
   };
 }
