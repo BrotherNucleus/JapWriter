@@ -15,7 +15,7 @@ body {
 }
 
 .app-shell {
-  width: min(100% - 2rem, 52rem);
+  width: min(100% - 2rem, 62rem);
   margin: 0 auto;
   padding: 3rem 0;
 }
@@ -80,34 +80,127 @@ h2 {
   text-align: right;
 }
 
-.canvas-frame {
-  margin-top: 1.5rem;
-  overflow: hidden;
-  border: 2px solid #d1d5db;
-  border-radius: 0.5rem;
-  background:
-    linear-gradient(#e5e7eb 1px, transparent 1px),
-    linear-gradient(90deg, #e5e7eb 1px, transparent 1px),
-    #ffffff;
-  background-size: 2rem 2rem;
-}
-
-#writing-canvas {
-  display: block;
-  width: 100%;
-  height: min(60vw, 30rem);
-  min-height: 16rem;
-  touch-action: none;
-  cursor: crosshair;
-}
-
-.canvas-actions {
+.legend {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+  color: #4b5563;
+  font-size: 0.875rem;
 }
 
-button {
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legend-swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1px solid #9ca3af;
+  border-radius: 50%;
+}
+
+.state-known {
+  background: #dbeafe;
+}
+
+.state-learning {
+  background: #fef3c7;
+}
+
+.state-unselected {
+  background: #ffffff;
+}
+
+.character-groups {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.character-row {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.row-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+h3 {
+  margin: 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.text-button {
+  padding: 0.25rem 0.375rem;
+  border: 0;
+  color: #4f46e5;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.text-button:hover:not(:disabled) {
+  color: #3730a3;
+  background: #eef2ff;
+}
+
+.character-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-top: 0.75rem;
+}
+
+.character-button {
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0.625rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.375rem;
+  color: #111827;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.character-button[data-state="known"] {
+  border-color: #2563eb;
+  background: #dbeafe;
+}
+
+.character-button[data-state="learning"] {
+  border-color: #d97706;
+  background: #fef3c7;
+}
+
+.character-button:hover {
+  border-color: #4f46e5;
+}
+
+.character-button:focus-visible,
+.text-button:focus-visible,
+#start-button:focus-visible {
+  outline: 3px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+#start-button {
   padding: 0.625rem 1rem;
   border: 1px solid #4f46e5;
   border-radius: 0.375rem;
@@ -118,23 +211,28 @@ button {
   font-weight: 600;
 }
 
-button:hover:not(:disabled) {
+#start-button:hover:not(:disabled) {
   background: #4338ca;
 }
 
-button:focus-visible {
-  outline: 3px solid #a5b4fc;
-  outline-offset: 2px;
-}
-
-button:disabled {
+#start-button:disabled {
   border-color: #d1d5db;
   color: #9ca3af;
   background: #f3f4f6;
   cursor: not-allowed;
 }
 
-.card p {
+.setup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.setup-footer .status {
   margin: 0.75rem 0 0;
 }
 
@@ -150,5 +248,11 @@ button:disabled {
   .status {
     margin-top: 0.75rem;
     text-align: left;
+  }
+
+  .row-heading,
+  .setup-footer {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

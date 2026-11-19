@@ -20,6 +20,12 @@ Opening `index.html` directly may work for the initial skeleton, but serving
 the project over HTTP is recommended as the app grows and uses JavaScript
 modules.
 
+Run the automated tests with Node.js:
+
+```text
+node --test
+```
+
 ## Deploy to GitHub Pages
 
 The workflow in `.github/workflows/pages.yml` deploys the repository root to
@@ -31,7 +37,8 @@ when hosted under a repository subpath.
 
 ## Project status
 
-Milestone 2 is complete: the page includes a responsive writing canvas that
-supports mouse, touch, and stylus input. Use **Undo** to remove the most recent
-stroke and **Clear** to remove all strokes. The canvas is intentionally a
-standalone module so it can be connected to character prompts later.
+Milestone 3 is complete: the setup screen includes the modern hiragana set,
+including voiced, semi-voiced, and small kana. Click a character to cycle
+between not selected, known, and learning. Row actions can set or clear a
+whole row. Selection is held in memory through a storage interface and is
+ready to be connected to practice prompts in the next milestone.

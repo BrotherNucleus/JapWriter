@@ -11,34 +11,33 @@
     <main class="app-shell">
       <header class="app-header">
         <p class="eyebrow">Japanese writing practice</p>
-        <h1>Write Japanese by hand</h1>
+        <h1>Choose your hiragana</h1>
         <p class="intro">
-          Choose the hiragana you know and want to learn, then practice writing
-          words on a canvas.
+          Mark characters you know and characters you want to learn. You can
+          change this selection whenever you like.
         </p>
       </header>
 
-      <section class="card writing-card" aria-labelledby="writing-title">
+      <section class="card setup-card" aria-labelledby="setup-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Milestone 2</p>
-            <h2 id="writing-title">Try the writing canvas</h2>
+            <p class="eyebrow">Milestone 3</p>
+            <h2 id="setup-title">Character setup</h2>
           </div>
-          <p id="canvas-status" class="status" role="status">Ready to write</p>
+          <p id="selection-status" class="status" role="status"></p>
         </div>
 
-        <div class="canvas-frame">
-          <canvas
-            id="writing-canvas"
-            aria-label="Writing canvas"
-            width="800"
-            height="480"
-          ></canvas>
+        <div class="legend" aria-label="Character states">
+          <span><span class="legend-swatch state-known"></span>Known</span>
+          <span><span class="legend-swatch state-learning"></span>Learning</span>
+          <span><span class="legend-swatch state-unselected"></span>Not selected</span>
         </div>
 
-        <div class="canvas-actions">
-          <button id="undo-button" type="button" disabled>Undo</button>
-          <button id="clear-button" type="button" disabled>Clear</button>
+        <div id="character-groups" class="character-groups"></div>
+
+        <div class="setup-footer">
+          <p id="setup-message" class="status" role="status"></p>
+          <button id="start-button" type="button" disabled>Start practice</button>
         </div>
       </section>
     </main>
