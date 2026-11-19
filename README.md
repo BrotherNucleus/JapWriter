@@ -31,5 +31,7 @@ when hosted under a repository subpath.
 
 ## Project status
 
-Milestone 1 is complete: the static project skeleton, responsive base styles,
-README instructions, and GitHub Pages workflow are in place.
+Milestone 2 is complete: the page includes a responsive writing canvas that
+supports mouse, touch, and stylus input. Use **Undo** to remove the most recent
+stroke and **Clear** to remove all strokes. The canvas is intentionally a
+standalone module so it can be connected to character prompts later.

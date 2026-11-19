@@ -18,13 +18,30 @@
         </p>
       </header>
 
-      <section class="card" aria-labelledby="coming-soon-title">
-        <h2 id="coming-soon-title">Setup is coming next</h2>
-        <p>
-          The project skeleton is ready. The hiragana selection screen and
-          writing canvas will be added in the next milestones.
-        </p>
+      <section class="card writing-card" aria-labelledby="writing-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Milestone 2</p>
+            <h2 id="writing-title">Try the writing canvas</h2>
+          </div>
+          <p id="canvas-status" class="status" role="status">Ready to write</p>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas
+            id="writing-canvas"
+            aria-label="Writing canvas"
+            width="800"
+            height="480"
+          ></canvas>
+        </div>
+
+        <div class="canvas-actions">
+          <button id="undo-button" type="button" disabled>Undo</button>
+          <button id="clear-button" type="button" disabled>Clear</button>
+        </div>
       </section>
     </main>
+    <script type="module" src="./js/main.js"></script>
   </body>
 </html>
