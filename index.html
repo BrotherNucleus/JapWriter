@@ -53,9 +53,16 @@
         <div id="prompt-area" class="prompt-area"></div>
         <p id="practice-status" class="status" role="status"></p>
 
-        <div id="character-canvases" class="character-canvases"></div>
+        <div id="writing-surface" class="writing-surface">
+          <canvas
+            id="practice-canvas"
+            class="practice-canvas"
+            aria-label="Write the complete Japanese word"
+            width="900"
+            height="300"
+          ></canvas>
+        </div>
         <div class="practice-actions">
-          <button id="next-character-button" type="button" disabled>Next character</button>
           <button id="submit-button" type="button" disabled>Submit word</button>
         </div>
 

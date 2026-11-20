@@ -38,10 +38,11 @@ when hosted under a repository subpath.
 ## Project status
 
 Milestone 4 is complete: select hiragana, then practice matching words by
-writing each character in order. The prompt shows English meaning and romaji,
-while the Japanese word remains hidden until submission. Mark each revealed
-character right or wrong yourself, then continue to the next word. Words that
-include learning characters are prioritized, and incorrect words return sooner.
+writing the complete word in one adaptive canvas. The prompt shows English
+meaning and romaji, while the Japanese word remains hidden until submission.
+Mark each revealed character right or wrong yourself, then continue to the next
+word. Words that include learning characters are prioritized, and incorrect
+words return sooner.
 
 The starter word list is in `data/words-hiragana.json`. It is a small,
 hand-curated list for this milestone; entries are intended to be common

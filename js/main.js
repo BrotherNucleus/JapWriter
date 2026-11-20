@@ -18,16 +18,15 @@ const startButton = document.querySelector("#start-button");
 const backButton = document.querySelector("#back-button");
 const promptArea = document.querySelector("#prompt-area");
 const practiceStatus = document.querySelector("#practice-status");
-const characterCanvases = document.querySelector("#character-canvases");
-const nextCharacterButton = document.querySelector("#next-character-button");
+const writingSurface = document.querySelector("#writing-surface");
+const practiceCanvas = document.querySelector("#practice-canvas");
 const submitButton = document.querySelector("#submit-button");
 const feedbackArea = document.querySelector("#feedback-area");
 const nextWordButton = document.querySelector("#next-word-button");
 let words = [];
 let scheduler;
 let currentWord;
-let currentCharacterIndex;
-let canvasControllers = [];
+let canvasController;
 
 function getSelectedCount(selection) {
   return Object.values(selection).filter(
@@ -120,49 +119,22 @@ function createPrompt() {
 }
 
 function renderCharacterCanvases() {
-  for (const controller of canvasControllers) {
-    controller.destroy();
-  }
-  canvasControllers = [];
-  characterCanvases.replaceChildren();
-  [...currentWord.word].forEach((character, index) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "character-canvas-wrapper";
-    const label = document.createElement("span");
-    label.className = "character-number";
-    label.textContent = `${index + 1}`;
-    const canvas = document.createElement("canvas");
-    canvas.className = "practice-canvas";
-    canvas.width = 300;
-    canvas.height = 300;
-    canvas.setAttribute("aria-label", `Write character ${index + 1}`);
-    wrapper.append(label, canvas);
-    characterCanvases.append(wrapper);
-    canvasControllers.push(
-      createDrawingCanvas(canvas, {
-        onChange: () => updatePracticeControls()
-      })
-    );
+  canvasController?.destroy();
+  writingSurface.style.setProperty("--word-length", String([...currentWord.word].length));
+  practiceCanvas.setAttribute(
+    "aria-label",
+    `Write the complete word, ${[...currentWord.word].length} characters`
+  );
+  canvasController = createDrawingCanvas(practiceCanvas, {
+    onChange: updatePracticeControls
   });
-  canvasControllers.forEach((controller) => controller.resize());
+  canvasController.resize();
   updatePracticeControls();
 }
 
 function updatePracticeControls() {
-  const active = canvasControllers[currentCharacterIndex];
-  const isLast = currentCharacterIndex === canvasControllers.length - 1;
-  const hasCurrentStroke = active?.hasStrokes() ?? false;
-  nextCharacterButton.hidden = isLast;
-  submitButton.hidden = !isLast;
-  nextCharacterButton.disabled = !hasCurrentStroke;
-  submitButton.disabled = !hasCurrentStroke;
-  practiceStatus.textContent = `Write character ${currentCharacterIndex + 1} of ${canvasControllers.length}.`;
-  canvasControllers.forEach((controller, index) => {
-    controller.setEnabled(index === currentCharacterIndex);
-  });
-  [...characterCanvases.children].forEach((wrapper, index) => {
-    wrapper.classList.toggle("active-character", index === currentCharacterIndex);
-  });
+  submitButton.disabled = !(canvasController?.hasStrokes() ?? false);
+  practiceStatus.textContent = `Write all ${[...currentWord.word].length} characters in order.`;
 }
 
 function startWord() {
@@ -172,7 +144,6 @@ function startWord() {
       "Too few matching words. Select more characters and try again.";
     return false;
   }
-  currentCharacterIndex = 0;
   setupScreen.hidden = true;
   practiceScreen.hidden = false;
   pageTitle.textContent = "Practice Japanese writing";
@@ -201,7 +172,6 @@ function showFeedback() {
   feedbackArea.replaceChildren(list);
   feedbackArea.hidden = false;
   submitButton.hidden = true;
-  nextCharacterButton.hidden = true;
   nextWordButton.hidden = false;
   nextWordButton.disabled = true;
   practiceStatus.textContent = "Mark each character based on your handwriting.";
@@ -241,11 +211,6 @@ startButton.addEventListener("click", async () => {
     }
   }
   startWord();
-});
-
-nextCharacterButton.addEventListener("click", () => {
-  currentCharacterIndex += 1;
-  updatePracticeControls();
 });
 
 submitButton.addEventListener("click", () => {
