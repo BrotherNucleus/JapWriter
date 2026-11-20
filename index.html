@@ -53,21 +53,24 @@
         <div id="prompt-area" class="prompt-area"></div>
         <p id="practice-status" class="status" role="status"></p>
 
-        <div id="writing-surface" class="writing-surface">
-          <canvas
-            id="practice-canvas"
-            class="practice-canvas"
-            aria-label="Write the complete Japanese word"
-            width="900"
-            height="300"
-          ></canvas>
+        <div class="practice-layout">
+          <div id="writing-surface" class="writing-surface">
+            <canvas
+              id="practice-canvas"
+              class="practice-canvas"
+              aria-label="Write the complete Japanese word"
+              width="900"
+              height="300"
+            ></canvas>
+          </div>
+          <aside class="practice-side-panel">
+            <div class="practice-actions">
+              <button id="submit-button" type="button" disabled>Submit word</button>
+            </div>
+            <div id="feedback-area" class="feedback-area" hidden></div>
+            <button id="next-word-button" type="button" hidden>Next word</button>
+          </aside>
         </div>
-        <div class="practice-actions">
-          <button id="submit-button" type="button" disabled>Submit word</button>
-        </div>
-
-        <div id="feedback-area" class="feedback-area" hidden></div>
-        <button id="next-word-button" type="button" hidden>Next word</button>
       </section>
     </main>
     <script type="module" src="./js/main.js"></script>

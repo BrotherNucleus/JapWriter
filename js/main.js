@@ -150,6 +150,7 @@ function startWord() {
   pageIntro.textContent =
     "Write each character in order. The Japanese word stays hidden until you submit.";
   feedbackArea.hidden = true;
+  submitButton.hidden = false;
   nextWordButton.hidden = true;
   createPrompt();
   renderCharacterCanvases();

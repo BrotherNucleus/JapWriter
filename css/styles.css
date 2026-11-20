@@ -270,9 +270,17 @@ h3 {
   text-align: left;
 }
 
-.writing-surface {
-  height: clamp(16rem, calc(10rem + var(--word-length, 3) * 2rem), 28rem);
+.practice-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+  align-items: start;
+  gap: 1.5rem;
   margin-top: 1rem;
+}
+
+.writing-surface {
+  width: min(100%, 36rem);
+  height: clamp(14rem, calc(12rem + var(--word-length, 3) * 3rem), 28rem);
   overflow: hidden;
   border: 2px solid #d1d5db;
   border-radius: 0.5rem;
@@ -292,10 +300,6 @@ h3 {
   touch-action: none;
 }
 
-.active-character .practice-canvas {
-  border-color: #4f46e5;
-}
-
 .disabled-canvas {
   cursor: not-allowed;
 }
@@ -304,7 +308,7 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 .practice-actions button,
@@ -348,8 +352,8 @@ h3 {
 }
 
 .feedback-area {
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -417,6 +421,14 @@ h3 {
   .status {
     margin-top: 0.75rem;
     text-align: left;
+  }
+
+  .practice-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .writing-surface {
+    width: 100%;
   }
 
   .row-heading,
