@@ -285,10 +285,13 @@ h3 {
   border: 2px solid #d1d5db;
   border-radius: 0.5rem;
   background:
-    linear-gradient(#e5e7eb 1px, transparent 1px),
-    linear-gradient(90deg, #e5e7eb 1px, transparent 1px),
-    #ffffff;
-  background-size: 2rem 2rem;
+    repeating-linear-gradient(
+      to bottom,
+      #ffffff 0,
+      #ffffff 12rem,
+      #f8fafc 12rem,
+      #f8fafc 24rem
+    );
 }
 
 .practice-canvas {
