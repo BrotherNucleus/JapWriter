@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { CHARACTER_STATES, ALL_HIRAGANA } from "../js/characters.js";
-import { createMemoryStorage } from "../js/storage.js";
+import {
+  createLocalStorage,
+  createMemoryStorage,
+  SELECTION_STORAGE_KEY
+} from "../js/storage.js";
 
 test("memory storage starts with every hiragana unselected", () => {
   const storage = createMemoryStorage();
@@ -37,4 +41,26 @@ test("memory storage rejects unknown characters and states", () => {
     () => storage.setCharacterState("あ", "mastered"),
     /Unknown character state/
   );
+});
+
+test("local storage saves and restores the selection", () => {
+  const values = new Map();
+  const browserStorage = {
+    getItem(key) {
+      return values.get(key) ?? null;
+    },
+    setItem(key, value) {
+      values.set(key, value);
+    }
+  };
+  const storage = createLocalStorage(browserStorage);
+
+  storage.setCharacterState("あ", CHARACTER_STATES.known);
+  const restored = createLocalStorage(browserStorage);
+
+  assert.equal(
+    restored.getSelection()["あ"],
+    CHARACTER_STATES.known
+  );
+  assert.ok(values.has(SELECTION_STORAGE_KEY));
 });

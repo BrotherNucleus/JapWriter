@@ -1,7 +1,8 @@
 # Japanese Writing Practice
 
 A static web app for practicing handwritten Japanese characters. The first
-version focuses on hiragana and keeps user state in memory.
+version focuses on hiragana. Character selections are saved in the browser
+using `localStorage`; word review history remains in memory.
 
 ## Run locally
 
@@ -54,3 +55,7 @@ The word list is in `data/words-hiragana.json`. It currently contains over 200
 hand-curated entries intended to be common hiragana-only vocabulary. The list
 should still be reviewed and expanded before a final release. No external
 dataset is used, so there is no third-party word-list license to record.
+
+Selected known and learning characters are restored automatically when the app
+is reopened in the same browser. Clearing that browser's site data resets the
+selection.

@@ -1,12 +1,12 @@
 import { CHARACTER_STATES, HIRAGANA_ROWS } from "./characters.js";
 import { createDrawingCanvas } from "./canvas.js";
-import { createMemoryStorage } from "./storage.js";
+import { createLocalStorage } from "./storage.js";
 import { createScheduler } from "./scheduler.js";
 import { strings } from "./strings.js";
 import { loadWords } from "./words.js";
 
 const MINIMUM_SELECTION = 3;
-const storage = createMemoryStorage();
+const storage = createLocalStorage();
 const setupScreen = document.querySelector("#setup-screen");
 const practiceScreen = document.querySelector("#practice-screen");
 const pageTitle = document.querySelector("#page-title");
