@@ -3,6 +3,7 @@ import { filterWords, getLearningCount } from "./words.js";
 const UNSEEN_WEIGHT = 1;
 const CORRECT_WEIGHT = 0.25;
 const INCORRECT_WEIGHT = 1.25;
+const KNOWN_ONLY_MULTIPLIER = 0.5;
 const COOLDOWN_LENGTH = 2;
 
 export function getReviewWeight(record) {
@@ -10,6 +11,15 @@ export function getReviewWeight(record) {
     return UNSEEN_WEIGHT;
   }
   return record.correct ? CORRECT_WEIGHT : INCORRECT_WEIGHT;
+}
+
+export function getPracticeWeight(entry, selection, record) {
+  const learningCount = getLearningCount(entry.word, selection);
+  const characterMultiplier =
+    learningCount === 0
+      ? KNOWN_ONLY_MULTIPLIER
+      : 1 + learningCount * 0.25;
+  return getReviewWeight(record) * characterMultiplier;
 }
 
 function chooseWeighted(candidates, getWeight, random) {
@@ -41,9 +51,7 @@ export function createScheduler(words, random = Math.random) {
 
     const selected = chooseWeighted(
       candidates,
-      (entry) =>
-        getReviewWeight(history.get(entry.word)) *
-        (1 + getLearningCount(entry.word, selection) * 0.25),
+      (entry) => getPracticeWeight(entry, selection, history.get(entry.word)),
       random
     );
     recentWords.push(selected.word);

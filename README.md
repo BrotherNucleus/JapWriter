@@ -47,7 +47,8 @@ Mark each revealed character right or wrong yourself, then continue to the next
 word. Words that include learning characters are prioritized, and incorrect
 words return sooner. A word is kept out of the next two selections; incorrect
 words receive a slightly higher review weight than unseen words, while correct
-words receive a lower weight.
+words receive a lower weight. Words containing only known characters remain
+eligible with a lower weight than words containing learning characters.
 
 The starter word list is in `data/words-hiragana.json`. It is a small,
 hand-curated list for this milestone; entries are intended to be common

@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { CHARACTER_STATES } from "../js/characters.js";
-import { createScheduler, getReviewWeight } from "../js/scheduler.js";
+import {
+  createScheduler,
+  getPracticeWeight,
+  getReviewWeight
+} from "../js/scheduler.js";
 import { filterWords } from "../js/words.js";
 
 const words = [
@@ -48,4 +52,17 @@ test("scheduler keeps a word out of the next two selections", () => {
 test("scheduler scores incorrect words above unseen words and correct words below them", () => {
   assert.ok(getReviewWeight({ correct: false }) > getReviewWeight());
   assert.ok(getReviewWeight({ correct: true }) < getReviewWeight());
+});
+
+test("scheduler gives known-only words a lower weight than learning words", () => {
+  const selection = {
+    あ: CHARACTER_STATES.known,
+    い: CHARACTER_STATES.learning,
+    お: CHARACTER_STATES.known
+  };
+
+  assert.ok(
+    getPracticeWeight(words[1], selection) <
+      getPracticeWeight({ word: "い" }, selection)
+  );
 });
