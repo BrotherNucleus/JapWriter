@@ -272,14 +272,14 @@ h3 {
 
 .practice-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+  grid-template-columns: minmax(0, 24rem) minmax(13rem, 17rem);
   align-items: start;
   gap: 1.5rem;
   margin-top: 1rem;
 }
 
 .writing-surface {
-  width: min(100%, 36rem);
+  width: 100%;
   height: clamp(14rem, calc(12rem + var(--word-length, 3) * 3rem), 28rem);
   overflow: hidden;
   border: 2px solid #d1d5db;
