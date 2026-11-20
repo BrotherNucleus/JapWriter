@@ -279,8 +279,8 @@ h3 {
 }
 
 .writing-surface {
-  width: min(100%, max(12rem, calc(var(--word-length, 3) * 6rem)));
-  height: 16rem;
+  width: min(100%, 12rem);
+  height: calc(var(--word-length, 3) * 12rem);
   overflow: hidden;
   border: 2px solid #d1d5db;
   border-radius: 0.5rem;
