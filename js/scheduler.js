@@ -1,8 +1,8 @@
 import { filterWords, getLearningCount } from "./words.js";
 
-const UNSEEN_WEIGHT = 1;
+const UNSEEN_WEIGHT = 4;
 const CORRECT_WEIGHT = 0.25;
-const INCORRECT_WEIGHT = 1.25;
+const INCORRECT_WEIGHT = 1.5;
 const KNOWN_ONLY_MULTIPLIER = 0.5;
 const COOLDOWN_LENGTH = 2;
 

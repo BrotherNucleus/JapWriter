@@ -49,8 +49,9 @@ test("scheduler keeps a word out of the next two selections", () => {
   assert.equal(first.word, fourth.word);
 });
 
-test("scheduler scores incorrect words above unseen words and correct words below them", () => {
-  assert.ok(getReviewWeight({ correct: false }) > getReviewWeight());
+test("scheduler scores unseen words above incorrect and correct words", () => {
+  assert.ok(getReviewWeight() > getReviewWeight({ correct: false }));
+  assert.ok(getReviewWeight({ correct: false }) > getReviewWeight({ correct: true }));
   assert.ok(getReviewWeight({ correct: true }) < getReviewWeight());
 });
 
