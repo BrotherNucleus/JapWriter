@@ -202,32 +202,36 @@ characterGroups.addEventListener("click", (event) => {
   renderSetup();
 });
 
-downloadSelectionButton.addEventListener("click", () => {
-  const file = new Blob([storage.exportSelection()], {
-    type: "application/json"
+if (downloadSelectionButton) {
+  downloadSelectionButton.addEventListener("click", () => {
+    const file = new Blob([storage.exportSelection()], {
+      type: "application/json"
+    });
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "japwriter-selection.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   });
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "japwriter-selection.json";
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
-});
+}
 
-selectionFileInput.addEventListener("change", async () => {
-  const [file] = selectionFileInput.files;
-  if (!file) return;
-  try {
-    storage.importSelection(await file.text());
-    renderSetup();
-    setupMessage.textContent = "Selection imported successfully.";
-  } catch (error) {
-    renderSetup();
-    setupMessage.textContent = error.message;
-  } finally {
-    selectionFileInput.value = "";
-  }
-});
+if (selectionFileInput) {
+  selectionFileInput.addEventListener("change", async () => {
+    const [file] = selectionFileInput.files;
+    if (!file) return;
+    try {
+      storage.importSelection(await file.text());
+      renderSetup();
+      setupMessage.textContent = "Selection imported successfully.";
+    } catch (error) {
+      renderSetup();
+      setupMessage.textContent = error.message;
+    } finally {
+      selectionFileInput.value = "";
+    }
+  });
+}
 
 startButton.addEventListener("click", async () => {
   if (words.length === 0) {
