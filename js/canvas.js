@@ -8,7 +8,9 @@ function getCanvasPoint(canvas, event) {
   return {
     x: event.clientX - bounds.left,
     y: event.clientY - bounds.top,
-    p: event.pressure ? event.pressure : 0.5
+    p: typeof event.pressure === "number" && event.pressure > 0
+      ? event.pressure
+      : 0.5
   };
 }
 
@@ -16,14 +18,24 @@ function drawStroke(context, stroke) {
   if (stroke.length === 0) {
     return;
   }
-
-  context.beginPath();
-  context.moveTo(stroke[0].x, stroke[0].y);
-  for (const point of stroke.slice(1)) {
+  if (stroke.length === 1) {
+    const point = stroke[0];
+    context.beginPath();
     context.lineWidth = point.p * DEFAULT_LINE_WIDTH;
-    context.lineTo(point.x, point.y);
+    context.arc(point.x, point.y, context.lineWidth / 2, 0, Math.PI * 2);
+    context.fill();
+    return;
   }
-  context.stroke();
+
+  for (let index = 1; index < stroke.length; index += 1) {
+    const start = stroke[index - 1];
+    const end = stroke[index];
+    context.beginPath();
+    context.moveTo(start.x, start.y);
+    context.lineWidth = end.p * DEFAULT_LINE_WIDTH;
+    context.lineTo(end.x, end.y);
+    context.stroke();
+  }
 }
 
 function configureContext(context) {
@@ -31,6 +43,7 @@ function configureContext(context) {
   context.lineJoin = "round";
   context.lineWidth = DEFAULT_LINE_WIDTH;
   context.strokeStyle = DEFAULT_LINE_COLOR;
+  context.fillStyle = DEFAULT_LINE_COLOR;
 }
 
 function distanceToSegment(point, start, end) {
