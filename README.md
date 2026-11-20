@@ -38,7 +38,8 @@ when hosted under a repository subpath.
 ## Project status
 
 Milestone 4 is complete: select hiragana, then practice matching words by
-writing the complete word in one adaptive canvas. The prompt shows English
+writing the complete word in one adaptive canvas whose width reflects the
+number of characters. The prompt shows English
 meaning and romaji, while the Japanese word remains hidden until submission.
 Mark each revealed character right or wrong yourself, then continue to the next
 word. Words that include learning characters are prioritized, and incorrect

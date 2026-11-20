@@ -279,8 +279,8 @@ h3 {
 }
 
 .writing-surface {
-  width: 100%;
-  height: clamp(14rem, calc(12rem + var(--word-length, 3) * 3rem), 28rem);
+  width: min(100%, max(12rem, calc(var(--word-length, 3) * 6rem)));
+  height: 12rem;
   overflow: hidden;
   border: 2px solid #d1d5db;
   border-radius: 0.5rem;
@@ -425,10 +425,6 @@ h3 {
 
   .practice-layout {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .writing-surface {
-    width: 100%;
   }
 
   .row-heading,
