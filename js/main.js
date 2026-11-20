@@ -14,6 +14,9 @@ const pageIntro = document.querySelector("#page-intro");
 const characterGroups = document.querySelector("#character-groups");
 const selectionStatus = document.querySelector("#selection-status");
 const setupMessage = document.querySelector("#setup-message");
+const downloadSelectionButton = document.querySelector("#download-selection-button");
+const uploadSelectionButton = document.querySelector("#upload-selection-button");
+const selectionFileInput = document.querySelector("#selection-file-input");
 const startButton = document.querySelector("#start-button");
 const backButton = document.querySelector("#back-button");
 const promptArea = document.querySelector("#prompt-area");
@@ -198,6 +201,37 @@ characterGroups.addEventListener("click", (event) => {
     );
   }
   renderSetup();
+});
+
+downloadSelectionButton.addEventListener("click", () => {
+  const file = new Blob([storage.exportSelection()], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "japwriter-selection.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+});
+
+uploadSelectionButton.addEventListener("click", () => {
+  selectionFileInput.click();
+});
+
+selectionFileInput.addEventListener("change", async () => {
+  const [file] = selectionFileInput.files;
+  if (!file) return;
+  try {
+    storage.importSelection(await file.text());
+    renderSetup();
+    setupMessage.textContent = "Selection imported successfully.";
+  } catch (error) {
+    renderSetup();
+    setupMessage.textContent = error.message;
+  } finally {
+    selectionFileInput.value = "";
+  }
 });
 
 startButton.addEventListener("click", async () => {

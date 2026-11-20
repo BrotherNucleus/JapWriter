@@ -59,3 +59,7 @@ dataset is used, so there is no third-party word-list license to record.
 Selected known and learning characters are restored automatically when the app
 is reopened in the same browser. Clearing that browser's site data resets the
 selection.
+
+Use **Download selection** to save the character states as a JSON file and
+**Upload selection** to restore that file on another device or browser. Upload
+files are validated before they replace the current selection.

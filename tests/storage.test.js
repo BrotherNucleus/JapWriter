@@ -64,3 +64,34 @@ test("local storage saves and restores the selection", () => {
   );
   assert.ok(values.has(SELECTION_STORAGE_KEY));
 });
+
+test("selection data can be exported and imported", () => {
+  const source = createMemoryStorage();
+  source.setCharacterState("あ", CHARACTER_STATES.known);
+  source.setCharacterState("い", CHARACTER_STATES.learning);
+
+  const destination = createMemoryStorage();
+  destination.importSelection(source.exportSelection());
+
+  assert.equal(
+    destination.getSelection()["あ"],
+    CHARACTER_STATES.known
+  );
+  assert.equal(
+    destination.getSelection()["い"],
+    CHARACTER_STATES.learning
+  );
+});
+
+test("selection import rejects invalid and unsupported files", () => {
+  const storage = createMemoryStorage();
+
+  assert.throws(
+    () => storage.importSelection("{"),
+    /Could not read hiragana selection file/
+  );
+  assert.throws(
+    () => storage.importSelection(JSON.stringify({ version: 2, selection: {} })),
+    /unsupported format/
+  );
+});

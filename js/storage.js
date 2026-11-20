@@ -38,6 +38,27 @@ function createSelectionStorage(initialSelection, persist) {
     getSelection() {
       return { ...selection };
     },
+    exportSelection() {
+      return JSON.stringify(
+        { version: 1, selection },
+        null,
+        2
+      );
+    },
+    importSelection(serializedSelection) {
+      let imported;
+      try {
+        imported = JSON.parse(serializedSelection);
+      } catch (error) {
+        throw new Error(`Could not read hiragana selection file: ${error.message}`);
+      }
+      if (!imported || imported.version !== 1 || !imported.selection) {
+        throw new Error("Could not read hiragana selection file: unsupported format.");
+      }
+      const nextSelection = validateSelection(imported.selection);
+      selection = nextSelection;
+      persist(selection);
+    },
     setCharacterState(character, state) {
       if (!(character in selection)) {
         throw new Error(`Unknown hiragana character: ${character}`);
