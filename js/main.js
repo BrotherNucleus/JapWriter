@@ -15,7 +15,6 @@ const characterGroups = document.querySelector("#character-groups");
 const selectionStatus = document.querySelector("#selection-status");
 const setupMessage = document.querySelector("#setup-message");
 const downloadSelectionButton = document.querySelector("#download-selection-button");
-const uploadSelectionButton = document.querySelector("#upload-selection-button");
 const selectionFileInput = document.querySelector("#selection-file-input");
 const startButton = document.querySelector("#start-button");
 const backButton = document.querySelector("#back-button");
@@ -213,10 +212,6 @@ downloadSelectionButton.addEventListener("click", () => {
   link.download = "japwriter-selection.json";
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
-});
-
-uploadSelectionButton.addEventListener("click", () => {
-  selectionFileInput.click();
 });
 
 selectionFileInput.addEventListener("change", async () => {

@@ -375,6 +375,12 @@ h3 {
   background: #f3f4f6;
 }
 
+.upload-selection-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .feedback-area {
   margin-top: 1rem;
   padding-top: 1rem;
