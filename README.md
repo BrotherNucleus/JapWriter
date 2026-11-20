@@ -50,8 +50,7 @@ words receive a slightly higher review weight than unseen words, while correct
 words receive a lower weight. Words containing only known characters remain
 eligible with a lower weight than words containing learning characters.
 
-The starter word list is in `data/words-hiragana.json`. It is a small,
-hand-curated list for this milestone; entries are intended to be common
-hiragana-only vocabulary and should be expanded and reviewed before a final
-release. No external dataset is used, so there is no third-party word-list
-license to record.
+The word list is in `data/words-hiragana.json`. It currently contains over 200
+hand-curated entries intended to be common hiragana-only vocabulary. The list
+should still be reviewed and expanded before a final release. No external
+dataset is used, so there is no third-party word-list license to record.
