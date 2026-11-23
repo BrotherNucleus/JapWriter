@@ -1,11 +1,27 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CHARACTER_STATES, ALL_HIRAGANA, RETIRED_CHARACTERS } from "../js/characters.js";
+import {
+  CHARACTER_STATES,
+  ALL_HIRAGANA,
+  ALL_KATAKANA,
+  RETIRED_CHARACTERS,
+  SCRIPTS
+} from "../js/characters.js";
 import {
   createLocalStorage,
   createMemoryStorage,
+  createPreferences,
   SELECTION_STORAGE_KEY
 } from "../js/storage.js";
+
+function createFakeBrowserStorage() {
+  const values = new Map();
+  return {
+    values,
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value)
+  };
+}
 
 test("memory storage starts with every hiragana unselected", () => {
   const storage = createMemoryStorage();
@@ -119,15 +135,56 @@ test("selections saved with retired small kana still load", () => {
   assert.equal(Object.keys(restored.getSelection()).length, ALL_HIRAGANA.length);
 });
 
-test("learning-only mode is saved and restored", () => {
-  const values = new Map();
-  const browserStorage = {
-    getItem: (key) => values.get(key) ?? null,
-    setItem: (key, value) => values.set(key, value)
-  };
-  const storage = createLocalStorage(browserStorage);
-  assert.equal(storage.getLearningOnly(), false);
+test("preferences save learning-only mode and the active script", () => {
+  const browserStorage = createFakeBrowserStorage();
+  const preferences = createPreferences(browserStorage);
+  assert.equal(preferences.getLearningOnly(), false);
+  assert.equal(preferences.getActiveScript(), "hiragana");
 
-  storage.setLearningOnly(true);
-  assert.equal(createLocalStorage(browserStorage).getLearningOnly(), true);
+  preferences.setLearningOnly(true);
+  preferences.setActiveScript("katakana");
+  const restored = createPreferences(browserStorage);
+  assert.equal(restored.getLearningOnly(), true);
+  assert.equal(restored.getActiveScript(), "katakana");
+  assert.throws(() => preferences.setActiveScript("kanji"), /Unknown script/);
+});
+
+test("katakana selection is stored separately from hiragana", () => {
+  const browserStorage = createFakeBrowserStorage();
+  const hiragana = createLocalStorage(browserStorage, SCRIPTS.hiragana);
+  const katakana = createLocalStorage(browserStorage, SCRIPTS.katakana);
+
+  assert.equal(Object.keys(katakana.getSelection()).length, ALL_KATAKANA.length);
+  katakana.setCharacterState("ー", CHARACTER_STATES.learning);
+  hiragana.setCharacterState("あ", CHARACTER_STATES.known);
+
+  const restoredKatakana = createLocalStorage(browserStorage, SCRIPTS.katakana);
+  assert.equal(restoredKatakana.getSelection()["ー"], CHARACTER_STATES.learning);
+  assert.ok(!("あ" in restoredKatakana.getSelection()));
+  assert.throws(
+    () => katakana.setCharacterState("あ", CHARACTER_STATES.known),
+    /Unknown katakana character/
+  );
+});
+
+test("selection files are only imported into their own script", () => {
+  const hiragana = createMemoryStorage(SCRIPTS.hiragana);
+  const katakana = createMemoryStorage(SCRIPTS.katakana);
+  katakana.setCharacterState("ア", CHARACTER_STATES.known);
+
+  assert.throws(
+    () => hiragana.importSelection(katakana.exportSelection()),
+    /katakana selection. Switch to the Katakana tab/
+  );
+  assert.throws(
+    () => katakana.importSelection(hiragana.exportSelection()),
+    /hiragana selection. Switch to the Hiragana tab/
+  );
+
+  const fileWithoutScript = JSON.stringify({
+    version: 1,
+    selection: JSON.parse(hiragana.exportSelection()).selection
+  });
+  hiragana.importSelection(fileWithoutScript);
+  assert.throws(() => katakana.importSelection(fileWithoutScript), /Hiragana tab/);
 });

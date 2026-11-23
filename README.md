@@ -1,7 +1,7 @@
 # Japanese Writing Practice
 
 A static web app for practicing handwritten Japanese characters. The first
-version focuses on hiragana. Character selections are saved in the browser
+version covers hiragana and katakana. Character selections are saved in the browser
 using `localStorage`; word review history remains in memory.
 
 ## Run locally
@@ -56,8 +56,16 @@ hand-curated entries intended to be common hiragana-only vocabulary. The list
 should still be reviewed and expanded before a final release. Because を is
 only used as a particle, it is practised through short phrases tagged
 `phrase`, such as ほんをよむ (*hon wo yomu*, "read a book"); their romaji
-writes を as *wo* to tell it apart from お. No external
-dataset is used, so there is no third-party word-list license to record.
+writes を as *wo* to tell it apart from お.
+
+The **Katakana** tab works the same way with its own selection, word list
+(`data/words-katakana.json`, common loanwords) and review history. Small kana
+are left out of both tabs; the katakana tab adds the long vowel mark ー as a
+selectable character, and romaji writes it by doubling the vowel (コーヒー is
+*koohii*). ヲ, ヂ and ヅ can be selected but no katakana words use them.
+
+No external dataset is used for either word list, so there is no third-party
+word-list license to record.
 
 Selected known and learning characters are restored automatically when the app
 is reopened in the same browser. Clearing that browser's site data resets the
@@ -65,4 +73,6 @@ selection.
 
 Use **Download selection** to save the character states as a JSON file and
 **Upload selection** to restore that file on another device or browser. Upload
-files are validated before they replace the current selection.
+files are validated before they replace the current selection. Each tab saves
+and uploads its own selection file; a katakana file is rejected on the
+Hiragana tab and vice versa.

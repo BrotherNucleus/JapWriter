@@ -1,12 +1,17 @@
-import { CHARACTER_STATES, HIRAGANA_ROWS } from "./characters.js";
+import { CHARACTER_STATES, SCRIPTS } from "./characters.js";
 import { createDrawingCanvas } from "./canvas.js";
-import { createLocalStorage } from "./storage.js";
+import { createLocalStorage, createPreferences } from "./storage.js";
 import { createScheduler } from "./scheduler.js";
 import { strings } from "./strings.js";
 import { loadWords } from "./words.js";
 
 const MINIMUM_SELECTION = 3;
-const storage = createLocalStorage();
+const preferences = createPreferences();
+const storages = Object.fromEntries(
+  Object.values(SCRIPTS).map((script) => [script.id, createLocalStorage(localStorage, script)])
+);
+let activeScriptId = preferences.getActiveScript();
+const scriptTabs = document.querySelector("#script-tabs");
 const setupScreen = document.querySelector("#setup-screen");
 const practiceScreen = document.querySelector("#practice-screen");
 const pageTitle = document.querySelector("#page-title");
@@ -27,10 +32,25 @@ const practiceCanvas = document.querySelector("#practice-canvas");
 const submitButton = document.querySelector("#submit-button");
 const feedbackArea = document.querySelector("#feedback-area");
 const nextWordButton = document.querySelector("#next-word-button");
-let words = [];
-let scheduler;
+const schedulers = {};
 let currentWord;
 let canvasController;
+
+function activeScript() {
+  return SCRIPTS[activeScriptId];
+}
+
+function activeStorage() {
+  return storages[activeScriptId];
+}
+
+function renderScriptTabs() {
+  scriptTabs.querySelectorAll("[data-script]").forEach((tab) => {
+    const selected = tab.dataset.script === activeScriptId;
+    tab.setAttribute("aria-selected", String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+}
 
 function getSelectedCount(selection) {
   return Object.values(selection).filter(
@@ -85,16 +105,17 @@ function createRow(row, selection) {
 }
 
 function renderSetup() {
-  const selection = storage.getSelection();
+  renderScriptTabs();
+  const selection = activeStorage().getSelection();
   characterGroups.replaceChildren(
-    ...HIRAGANA_ROWS.map((row) => createRow(row, selection))
+    ...activeScript().rows.map((row) => createRow(row, selection))
   );
   const selectedCount = getSelectedCount(selection);
   selectionStatus.textContent = strings.selection.selectedCount(
     selectedCount,
     Object.keys(selection).length
   );
-  const learningOnly = storage.getLearningOnly();
+  const learningOnly = preferences.getLearningOnly();
   const hasLearning = Object.values(selection).includes(CHARACTER_STATES.learning);
   learningOnlyToggle.checked = learningOnly;
   startButton.disabled =
@@ -111,7 +132,7 @@ function renderSetup() {
 function showSetup() {
   setupScreen.hidden = false;
   practiceScreen.hidden = true;
-  pageTitle.textContent = "Choose your hiragana";
+  pageTitle.textContent = `Choose your ${activeScript().name.toLowerCase()}`;
   pageIntro.textContent =
     "Mark characters you know and characters you want to learn. You can change this selection whenever you like.";
   renderSetup();
@@ -149,8 +170,8 @@ function updatePracticeControls() {
 }
 
 function startWord() {
-  const learningOnly = storage.getLearningOnly();
-  currentWord = scheduler.next(storage.getSelection(), { learningOnly });
+  const learningOnly = preferences.getLearningOnly();
+  currentWord = schedulers[activeScriptId].next(activeStorage().getSelection(), { learningOnly });
   if (!currentWord) {
     showSetup();
     setupMessage.textContent = learningOnly
@@ -202,9 +223,9 @@ characterGroups.addEventListener("click", (event) => {
       [CHARACTER_STATES.known]: CHARACTER_STATES.learning,
       [CHARACTER_STATES.learning]: CHARACTER_STATES.unselected
     }[button.dataset.state];
-    storage.setCharacterState(button.dataset.character, nextState);
+    activeStorage().setCharacterState(button.dataset.character, nextState);
   } else if (button.dataset.rowState && row) {
-    storage.setCharactersState(
+    activeStorage().setCharactersState(
       [...row.querySelectorAll("[data-character]")].map(
         (characterButton) => characterButton.dataset.character
       ),
@@ -216,13 +237,13 @@ characterGroups.addEventListener("click", (event) => {
 
 if (downloadSelectionButton) {
   downloadSelectionButton.addEventListener("click", () => {
-    const file = new Blob([storage.exportSelection()], {
+    const file = new Blob([activeStorage().exportSelection()], {
       type: "application/json"
     });
     const url = URL.createObjectURL(file);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "japwriter-selection.json";
+    link.download = `japwriter-${activeScriptId}-selection.json`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 0);
   });
@@ -233,7 +254,7 @@ if (selectionFileInput) {
     const [file] = selectionFileInput.files;
     if (!file) return;
     try {
-      storage.importSelection(await file.text());
+      activeStorage().importSelection(await file.text());
       renderSetup();
       setupMessage.textContent = "Selection imported successfully.";
     } catch (error) {
@@ -246,11 +267,11 @@ if (selectionFileInput) {
 }
 
 startButton.addEventListener("click", async () => {
-  if (words.length === 0) {
+  if (!schedulers[activeScriptId]) {
     setupMessage.textContent = "Loading word list...";
     try {
-      words = await loadWords();
-      scheduler = createScheduler(words);
+      const words = await loadWords(activeScript().wordsUrl);
+      schedulers[activeScriptId] = createScheduler(words);
     } catch (error) {
       setupMessage.textContent = error.message;
       return;
@@ -276,7 +297,7 @@ feedbackArea.addEventListener("click", (event) => {
   if (allMarked) {
     const correct = [...feedbackArea.querySelectorAll(".feedback-item")]
       .every((feedbackItem) => feedbackItem.dataset.result === "correct");
-    scheduler.record(currentWord, correct);
+    schedulers[activeScriptId].record(currentWord, correct);
     nextWordButton.disabled = false;
     practiceStatus.textContent = correct
       ? "All characters marked correct."
@@ -289,12 +310,29 @@ nextWordButton.addEventListener("click", () => {
 });
 
 learningOnlyToggle.addEventListener("change", () => {
-  storage.setLearningOnly(learningOnlyToggle.checked);
+  preferences.setLearningOnly(learningOnlyToggle.checked);
   renderSetup();
+});
+
+scriptTabs.addEventListener("click", (event) => {
+  const tab = event.target.closest("[data-script]");
+  if (!tab || tab.dataset.script === activeScriptId) return;
+  activeScriptId = tab.dataset.script;
+  preferences.setActiveScript(activeScriptId);
+  showSetup();
+});
+
+scriptTabs.addEventListener("keydown", (event) => {
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  const tabs = [...scriptTabs.querySelectorAll("[data-script]")];
+  const index = tabs.findIndex((tab) => tab.dataset.script === activeScriptId);
+  const next = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  next.click();
+  next.focus();
 });
 
 backButton.addEventListener("click", showSetup);
 
 learningOnlyLabel.textContent = strings.practiceMode.learningOnly;
 
-renderSetup();
+showSetup();

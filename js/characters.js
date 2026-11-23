@@ -30,3 +30,47 @@ export const RETIRED_CHARACTERS = Object.freeze(
 export const ALL_HIRAGANA = Object.freeze(
   HIRAGANA_ROWS.flatMap((row) => row.characters)
 );
+
+export const KATAKANA_ROWS = Object.freeze([
+  { label: "ア row", characters: ["ア", "イ", "ウ", "エ", "オ"] },
+  { label: "カ row", characters: ["カ", "キ", "ク", "ケ", "コ"] },
+  { label: "サ row", characters: ["サ", "シ", "ス", "セ", "ソ"] },
+  { label: "タ row", characters: ["タ", "チ", "ツ", "テ", "ト"] },
+  { label: "ナ row", characters: ["ナ", "ニ", "ヌ", "ネ", "ノ"] },
+  { label: "ハ row", characters: ["ハ", "ヒ", "フ", "ヘ", "ホ"] },
+  { label: "マ row", characters: ["マ", "ミ", "ム", "メ", "モ"] },
+  { label: "ヤ row", characters: ["ヤ", "ユ", "ヨ"] },
+  { label: "ラ row", characters: ["ラ", "リ", "ル", "レ", "ロ"] },
+  { label: "ワ row", characters: ["ワ", "ヲ", "ン"] },
+  { label: "ガ row", characters: ["ガ", "ギ", "グ", "ゲ", "ゴ"] },
+  { label: "ザ row", characters: ["ザ", "ジ", "ズ", "ゼ", "ゾ"] },
+  { label: "ダ row", characters: ["ダ", "ヂ", "ヅ", "デ", "ド"] },
+  { label: "バ row", characters: ["バ", "ビ", "ブ", "ベ", "ボ"] },
+  { label: "パ row", characters: ["パ", "ピ", "プ", "ペ", "ポ"] },
+  { label: "Long vowel mark", characters: ["ー"] }
+]);
+
+export const ALL_KATAKANA = Object.freeze(
+  KATAKANA_ROWS.flatMap((row) => row.characters)
+);
+
+export const SCRIPTS = Object.freeze({
+  hiragana: Object.freeze({
+    id: "hiragana",
+    name: "Hiragana",
+    rows: HIRAGANA_ROWS,
+    characters: ALL_HIRAGANA,
+    retiredCharacters: RETIRED_CHARACTERS,
+    storageKey: "japwriter.selection",
+    wordsUrl: "./data/words-hiragana.json"
+  }),
+  katakana: Object.freeze({
+    id: "katakana",
+    name: "Katakana",
+    rows: KATAKANA_ROWS,
+    characters: ALL_KATAKANA,
+    retiredCharacters: Object.freeze([]),
+    storageKey: "japwriter.katakana.selection",
+    wordsUrl: "./data/words-katakana.json"
+  })
+});

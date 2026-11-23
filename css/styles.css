@@ -516,3 +516,36 @@ h3 {
   outline: 3px solid #a5b4fc;
   outline-offset: 2px;
 }
+
+.script-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.script-tabs [role="tab"] {
+  margin-bottom: -1px;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: #6b7280;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.script-tabs [role="tab"]:hover {
+  color: #374151;
+}
+
+.script-tabs [role="tab"][aria-selected="true"] {
+  border-bottom-color: #4f46e5;
+  color: #4f46e5;
+}
+
+.script-tabs [role="tab"]:focus-visible {
+  outline: 3px solid #a5b4fc;
+  outline-offset: 2px;
+}

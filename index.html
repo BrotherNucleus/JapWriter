@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Practice writing Japanese characters by hand.">
     <title>Japanese Writing Practice</title>
-    <link rel="stylesheet" href="./css/styles.css?v=learning-only-1">
+    <link rel="stylesheet" href="./css/styles.css?v=katakana-1">
   </head>
   <body>
     <main class="app-shell">
@@ -19,6 +19,11 @@
       </header>
 
       <section id="setup-screen" class="card setup-card" aria-labelledby="setup-title">
+        <div id="script-tabs" class="script-tabs" role="tablist" aria-label="Writing system">
+          <button type="button" role="tab" data-script="hiragana" aria-selected="true">Hiragana</button>
+          <button type="button" role="tab" data-script="katakana" aria-selected="false" tabindex="-1">Katakana</button>
+        </div>
+
         <div class="section-heading">
           <div>
             <p class="eyebrow">Setup</p>
@@ -83,6 +88,19 @@
         </div>
       </section>
     </main>
-    <script type="module" src="./js/main.js?v=learning-only-1"></script>
+    <!-- Version every module so a deploy never mixes fresh and cached files. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "./js/canvas.js": "./js/canvas.js?v=katakana-1",
+          "./js/characters.js": "./js/characters.js?v=katakana-1",
+          "./js/scheduler.js": "./js/scheduler.js?v=katakana-1",
+          "./js/storage.js": "./js/storage.js?v=katakana-1",
+          "./js/strings.js": "./js/strings.js?v=katakana-1",
+          "./js/words.js": "./js/words.js?v=katakana-1"
+        }
+      }
+    </script>
+    <script type="module" src="./js/main.js?v=katakana-1"></script>
   </body>
 </html>
