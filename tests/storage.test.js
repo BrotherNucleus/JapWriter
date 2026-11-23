@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CHARACTER_STATES, ALL_HIRAGANA } from "../js/characters.js";
+import { CHARACTER_STATES, ALL_HIRAGANA, RETIRED_CHARACTERS } from "../js/characters.js";
 import {
   createLocalStorage,
   createMemoryStorage,
@@ -94,4 +94,27 @@ test("selection import rejects invalid and unsupported files", () => {
     () => storage.importSelection(JSON.stringify({ version: 2, selection: {} })),
     /unsupported format/
   );
+});
+
+test("selections saved with retired small kana still load", () => {
+  const legacySelection = Object.fromEntries(
+    [...ALL_HIRAGANA, ...RETIRED_CHARACTERS].map((character) => [
+      character,
+      CHARACTER_STATES.unselected
+    ])
+  );
+  legacySelection["あ"] = CHARACTER_STATES.known;
+  legacySelection["ゃ"] = CHARACTER_STATES.learning;
+
+  const storage = createMemoryStorage();
+  storage.importSelection(JSON.stringify({ version: 1, selection: legacySelection }));
+  assert.equal(storage.getSelection()["あ"], CHARACTER_STATES.known);
+  assert.ok(!("ゃ" in storage.getSelection()));
+
+  const browserStorage = {
+    getItem: () => JSON.stringify(legacySelection),
+    setItem() {}
+  };
+  const restored = createLocalStorage(browserStorage);
+  assert.equal(Object.keys(restored.getSelection()).length, ALL_HIRAGANA.length);
 });

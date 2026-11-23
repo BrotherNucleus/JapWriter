@@ -1,4 +1,4 @@
-import { CHARACTER_STATES, ALL_HIRAGANA } from "./characters.js";
+import { CHARACTER_STATES, ALL_HIRAGANA, RETIRED_CHARACTERS } from "./characters.js";
 
 export const SELECTION_STORAGE_KEY = "japwriter.selection";
 
@@ -8,10 +8,13 @@ function createEmptySelection() {
   );
 }
 
-function validateSelection(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
+function validateSelection(rawValue) {
+  if (!rawValue || typeof rawValue !== "object" || Array.isArray(rawValue)) {
     throw new Error("Saved hiragana selection has an invalid format.");
   }
+
+  const value = { ...rawValue };
+  RETIRED_CHARACTERS.forEach((character) => delete value[character]);
 
   const expectedCharacters = new Set(ALL_HIRAGANA);
   const savedCharacters = Object.keys(value);

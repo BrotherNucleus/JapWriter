@@ -19,9 +19,13 @@ export const HIRAGANA_ROWS = Object.freeze([
   { label: "ざ row", characters: ["ざ", "じ", "ず", "ぜ", "ぞ"] },
   { label: "だ row", characters: ["だ", "ぢ", "づ", "で", "ど"] },
   { label: "ば row", characters: ["ば", "び", "ぶ", "べ", "ぼ"] },
-  { label: "ぱ row", characters: ["ぱ", "ぴ", "ぷ", "ぺ", "ぽ"] },
-  { label: "Small kana", characters: ["ぁ", "ぃ", "ぅ", "ぇ", "ぉ", "ゃ", "ゅ", "ょ", "っ", "ゎ"] }
+  { label: "ぱ row", characters: ["ぱ", "ぴ", "ぷ", "ぺ", "ぽ"] }
 ]);
+
+// Characters that older saved selections may contain but the app no longer offers.
+export const RETIRED_CHARACTERS = Object.freeze(
+  ["ぁ", "ぃ", "ぅ", "ぇ", "ぉ", "ゃ", "ゅ", "ょ", "っ", "ゎ"]
+);
 
 export const ALL_HIRAGANA = Object.freeze(
   HIRAGANA_ROWS.flatMap((row) => row.characters)
