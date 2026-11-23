@@ -67,3 +67,30 @@ test("scheduler gives known-only words a lower weight than learning words", () =
       getPracticeWeight({ word: "い" }, selection)
   );
 });
+
+test("learning-only mode picks only words containing a learning character", () => {
+  const selection = {
+    あ: CHARACTER_STATES.known,
+    い: CHARACTER_STATES.learning,
+    お: CHARACTER_STATES.known,
+    か: CHARACTER_STATES.known
+  };
+  const scheduler = createScheduler(words, () => 0.99);
+
+  for (let round = 0; round < 6; round += 1) {
+    assert.equal(scheduler.next(selection, { learningOnly: true }).word, "あい");
+  }
+});
+
+test("learning-only mode returns nothing when no word has a learning character", () => {
+  const selection = {
+    あ: CHARACTER_STATES.known,
+    い: CHARACTER_STATES.known,
+    お: CHARACTER_STATES.known,
+    か: CHARACTER_STATES.known
+  };
+  const scheduler = createScheduler(words);
+
+  assert.equal(scheduler.next(selection, { learningOnly: true }), null);
+  assert.ok(scheduler.next(selection));
+});

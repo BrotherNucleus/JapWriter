@@ -118,3 +118,16 @@ test("selections saved with retired small kana still load", () => {
   const restored = createLocalStorage(browserStorage);
   assert.equal(Object.keys(restored.getSelection()).length, ALL_HIRAGANA.length);
 });
+
+test("learning-only mode is saved and restored", () => {
+  const values = new Map();
+  const browserStorage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value)
+  };
+  const storage = createLocalStorage(browserStorage);
+  assert.equal(storage.getLearningOnly(), false);
+
+  storage.setLearningOnly(true);
+  assert.equal(createLocalStorage(browserStorage).getLearningOnly(), true);
+});

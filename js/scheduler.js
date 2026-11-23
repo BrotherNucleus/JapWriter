@@ -40,11 +40,20 @@ export function createScheduler(words, random = Math.random) {
   const history = new Map();
   const recentWords = [];
 
-  function next(selection) {
+  function next(selection, { learningOnly = false } = {}) {
     const recentSet = new Set(recentWords);
-    const candidates = filterWords(words, selection).filter(
-      (entry) => !recentSet.has(entry.word)
+    const eligible = filterWords(words, selection).filter(
+      (entry) => !learningOnly || getLearningCount(entry.word, selection) > 0
     );
+    let candidates = eligible.filter((entry) => !recentSet.has(entry.word));
+    if (candidates.length === 0 && eligible.length > 0) {
+      // Too few words to honour the full cooldown: only avoid an immediate repeat.
+      const lastWord = recentWords.at(-1);
+      candidates = eligible.filter((entry) => entry.word !== lastWord);
+      if (candidates.length === 0) {
+        candidates = eligible;
+      }
+    }
     if (candidates.length === 0) {
       return null;
     }

@@ -1,6 +1,7 @@
 import { CHARACTER_STATES, ALL_HIRAGANA, RETIRED_CHARACTERS } from "./characters.js";
 
 export const SELECTION_STORAGE_KEY = "japwriter.selection";
+export const LEARNING_ONLY_STORAGE_KEY = "japwriter.learningOnly";
 
 function createEmptySelection() {
   return Object.fromEntries(
@@ -34,12 +35,25 @@ function validateSelection(rawValue) {
   return { ...value };
 }
 
-function createSelectionStorage(initialSelection, persist) {
+function createSelectionStorage(
+  initialSelection,
+  persist,
+  initialLearningOnly = false,
+  persistLearningOnly = () => {}
+) {
   let selection = validateSelection(initialSelection);
+  let learningOnly = initialLearningOnly;
 
   return {
     getSelection() {
       return { ...selection };
+    },
+    getLearningOnly() {
+      return learningOnly;
+    },
+    setLearningOnly(value) {
+      learningOnly = Boolean(value);
+      persistLearningOnly(learningOnly);
     },
     exportSelection() {
       return JSON.stringify(
@@ -104,11 +118,22 @@ export function createLocalStorage(storage = globalThis.localStorage) {
     }
   }
 
-  return createSelectionStorage(selection, (nextSelection) => {
-    try {
-      storage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(nextSelection));
-    } catch (error) {
-      throw new Error(`Could not save hiragana selection: ${error.message}`);
+  return createSelectionStorage(
+    selection,
+    (nextSelection) => {
+      try {
+        storage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(nextSelection));
+      } catch (error) {
+        throw new Error(`Could not save hiragana selection: ${error.message}`);
+      }
+    },
+    storage.getItem(LEARNING_ONLY_STORAGE_KEY) === "true",
+    (learningOnly) => {
+      try {
+        storage.setItem(LEARNING_ONLY_STORAGE_KEY, String(learningOnly));
+      } catch (error) {
+        throw new Error(`Could not save practice mode: ${error.message}`);
+      }
     }
-  });
+  );
 }

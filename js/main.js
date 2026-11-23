@@ -17,6 +17,8 @@ const setupMessage = document.querySelector("#setup-message");
 const downloadSelectionButton = document.querySelector("#download-selection-button");
 const selectionFileInput = document.querySelector("#selection-file-input");
 const startButton = document.querySelector("#start-button");
+const learningOnlyToggle = document.querySelector("#learning-only-toggle");
+const learningOnlyLabel = document.querySelector("#learning-only-label");
 const backButton = document.querySelector("#back-button");
 const promptArea = document.querySelector("#prompt-area");
 const practiceStatus = document.querySelector("#practice-status");
@@ -92,11 +94,18 @@ function renderSetup() {
     selectedCount,
     Object.keys(selection).length
   );
-  startButton.disabled = selectedCount < MINIMUM_SELECTION;
-  setupMessage.textContent =
-    selectedCount < MINIMUM_SELECTION
-      ? strings.selection.minimumRequired(MINIMUM_SELECTION)
-      : strings.selection.ready;
+  const learningOnly = storage.getLearningOnly();
+  const hasLearning = Object.values(selection).includes(CHARACTER_STATES.learning);
+  learningOnlyToggle.checked = learningOnly;
+  startButton.disabled =
+    selectedCount < MINIMUM_SELECTION || (learningOnly && !hasLearning);
+  if (selectedCount < MINIMUM_SELECTION) {
+    setupMessage.textContent = strings.selection.minimumRequired(MINIMUM_SELECTION);
+  } else if (learningOnly && !hasLearning) {
+    setupMessage.textContent = strings.practiceMode.noLearningCharacters;
+  } else {
+    setupMessage.textContent = strings.selection.ready;
+  }
 }
 
 function showSetup() {
@@ -140,10 +149,13 @@ function updatePracticeControls() {
 }
 
 function startWord() {
-  currentWord = scheduler.next(storage.getSelection());
+  const learningOnly = storage.getLearningOnly();
+  currentWord = scheduler.next(storage.getSelection(), { learningOnly });
   if (!currentWord) {
-    setupMessage.textContent =
-      "Too few matching words. Select more characters and try again.";
+    showSetup();
+    setupMessage.textContent = learningOnly
+      ? strings.practiceMode.noLearningWords
+      : "Too few matching words. Select more characters and try again.";
     return false;
   }
   setupScreen.hidden = true;
@@ -276,6 +288,13 @@ nextWordButton.addEventListener("click", () => {
   startWord();
 });
 
+learningOnlyToggle.addEventListener("change", () => {
+  storage.setLearningOnly(learningOnlyToggle.checked);
+  renderSetup();
+});
+
 backButton.addEventListener("click", showSetup);
+
+learningOnlyLabel.textContent = strings.practiceMode.learningOnly;
 
 renderSetup();

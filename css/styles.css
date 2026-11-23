@@ -464,3 +464,55 @@ h3 {
   }
 
 }
+
+.mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.mode-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.mode-switch-track {
+  position: relative;
+  flex: none;
+  width: 2.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: #d1d5db;
+  transition: background 0.15s;
+}
+
+.mode-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  transition: transform 0.15s;
+}
+
+.mode-switch input:checked + .mode-switch-track {
+  background: #d97706;
+}
+
+.mode-switch input:checked + .mode-switch-track::after {
+  transform: translateX(1rem);
+}
+
+.mode-switch input:focus-visible + .mode-switch-track {
+  outline: 3px solid #a5b4fc;
+  outline-offset: 2px;
+}

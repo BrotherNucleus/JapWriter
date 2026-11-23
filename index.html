@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Practice writing Japanese characters by hand.">
     <title>Japanese Writing Practice</title>
-    <link rel="stylesheet" href="./css/styles.css?v=83c140e">
+    <link rel="stylesheet" href="./css/styles.css?v=learning-only-1">
   </head>
   <body>
     <main class="app-shell">
@@ -41,6 +41,11 @@
             <button id="download-selection-button" type="button" class="secondary-button">Download selection</button>
             <label for="selection-file-input" class="secondary-button upload-selection-label">Upload selection</label>
             <input id="selection-file-input" type="file" accept=".json,application/json" hidden>
+            <label class="mode-switch" for="learning-only-toggle">
+              <input id="learning-only-toggle" type="checkbox" role="switch">
+              <span class="mode-switch-track" aria-hidden="true"></span>
+              <span id="learning-only-label">Only words with learning characters</span>
+            </label>
             <button id="start-button" type="button" disabled>Start practice</button>
           </div>
         </div>
@@ -78,6 +83,6 @@
         </div>
       </section>
     </main>
-    <script type="module" src="./js/main.js?v=83c140e"></script>
+    <script type="module" src="./js/main.js?v=learning-only-1"></script>
   </body>
 </html>

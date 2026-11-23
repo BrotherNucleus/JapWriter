@@ -11,5 +11,12 @@ export const strings = Object.freeze({
     rowKnown: "Mark row as known",
     rowLearning: "Mark row as learning",
     rowClear: "Clear row"
+  },
+  practiceMode: {
+    learningOnly: "Only words with learning characters",
+    noLearningCharacters:
+      "Mark at least one character as learning to use learning-only practice.",
+    noLearningWords:
+      "No words match your learning characters. Mark more characters, or turn off learning-only practice."
   }
 });
