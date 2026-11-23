@@ -53,7 +53,10 @@ remain eligible with a lower weight than words containing learning characters.
 
 The word list is in `data/words-hiragana.json`. It currently contains over 200
 hand-curated entries intended to be common hiragana-only vocabulary. The list
-should still be reviewed and expanded before a final release. No external
+should still be reviewed and expanded before a final release. Because を is
+only used as a particle, it is practised through short phrases tagged
+`phrase`, such as ほんをよむ (*hon wo yomu*, "read a book"); their romaji
+writes を as *wo* to tell it apart from お. No external
 dataset is used, so there is no third-party word-list license to record.
 
 Selected known and learning characters are restored automatically when the app
