@@ -19,3 +19,23 @@ for (const script of Object.values(SCRIPTS)) {
     assert.equal(new Set(words.map((entry) => entry.word)).size, words.length);
   });
 }
+
+// Characters that no real words in that script use.
+const CHARACTERS_WITHOUT_WORDS = {
+  hiragana: [],
+  katakana: ["ヲ", "ヂ", "ヅ"]
+};
+const MINIMUM_WORDS_PER_CHARACTER = 3;
+
+for (const script of Object.values(SCRIPTS)) {
+  test(`every ${script.id} character appears in at least ${MINIMUM_WORDS_PER_CHARACTER} words`, () => {
+    const url = new URL(script.wordsUrl, new URL("../", import.meta.url));
+    const words = JSON.parse(readFileSync(url, "utf8"));
+    const exempt = new Set(CHARACTERS_WITHOUT_WORDS[script.id]);
+    const rare = script.characters
+      .filter((character) => !exempt.has(character))
+      .map((character) => [character, words.filter((entry) => entry.word.includes(character)).length])
+      .filter(([, count]) => count < MINIMUM_WORDS_PER_CHARACTER);
+    assert.deepEqual(rare, []);
+  });
+}

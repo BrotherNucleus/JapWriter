@@ -56,13 +56,17 @@ hand-curated entries intended to be common hiragana-only vocabulary. The list
 should still be reviewed and expanded before a final release. Because を is
 only used as a particle, it is practised through short phrases tagged
 `phrase`, such as ほんをよむ (*hon wo yomu*, "read a book"); their romaji
-writes を as *wo* to tell it apart from お.
+writes を as *wo* to tell it apart from お. For the same reason ぢ and づ are
+written *di* and *du* (はなぢ is *hanadi*) so they are not confused with じ and
+ず. Every hiragana character appears in at least three words, and a test
+checks this.
 
 The **Katakana** tab works the same way with its own selection, word list
 (`data/words-katakana.json`, common loanwords) and review history. Small kana
 are left out of both tabs; the katakana tab adds the long vowel mark ー as a
 selectable character, and romaji writes it by doubling the vowel (コーヒー is
-*koohii*). ヲ, ヂ and ヅ can be selected but no katakana words use them.
+*koohii*). Every katakana character appears in at least three words except
+ヲ, ヂ and ヅ, which can be selected but are not used in katakana words.
 
 No external dataset is used for either word list, so there is no third-party
 word-list license to record.
