@@ -71,6 +71,18 @@ selectable character, and romaji writes it by doubling the vowel (コーヒー i
 No external dataset is used for either word list, so there is no third-party
 word-list license to record.
 
+## Reading practice
+
+Switch from **Write** to **Read** at the top of the page to practise reading.
+Choose Hiragana, Katakana or Both; the app shows a word in kana and you type its
+reading in romaji. Words come from the characters marked known or learning in
+Write mode (Both combines the two selections), and the learning-only switch
+applies here too. Answers are checked automatically and accept common
+spellings: long vowels as doubled vowels, *ou* or macrons (*koohii*, *kouhii*,
+*kōhī*), を as *o* or *wo*, ぢ/づ as *ji*/*zu* or *di*/*du*, *m* before b/p
+(*tempura*), and *si*, *ti*, *tu*, *hu*. Wrong answers come back sooner, as in
+writing practice. A test checks that every word's romaji matches its kana.
+
 Selected known and learning characters are restored automatically when the app
 is reopened in the same browser. Clearing that browser's site data resets the
 selection.

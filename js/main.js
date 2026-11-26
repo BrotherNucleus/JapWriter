@@ -1,9 +1,10 @@
 import { CHARACTER_STATES, SCRIPTS } from "./characters.js";
 import { createDrawingCanvas } from "./canvas.js";
 import { createLocalStorage, createPreferences } from "./storage.js";
+import { createReadingMode } from "./reading.js";
 import { createScheduler } from "./scheduler.js";
 import { strings } from "./strings.js";
-import { loadWords } from "./words.js";
+import { loadScriptWords } from "./words.js";
 
 const MINIMUM_SELECTION = 3;
 const preferences = createPreferences();
@@ -12,6 +13,8 @@ const storages = Object.fromEntries(
 );
 let activeScriptId = preferences.getActiveScript();
 const scriptTabs = document.querySelector("#script-tabs");
+const modeTabs = document.querySelector("#mode-tabs");
+let activeMode = preferences.getMode();
 const setupScreen = document.querySelector("#setup-screen");
 const practiceScreen = document.querySelector("#practice-screen");
 const pageTitle = document.querySelector("#page-title");
@@ -44,12 +47,44 @@ function activeStorage() {
   return storages[activeScriptId];
 }
 
-function renderScriptTabs() {
-  scriptTabs.querySelectorAll("[data-script]").forEach((tab) => {
-    const selected = tab.dataset.script === activeScriptId;
+function renderTabs(container, attribute, activeValue) {
+  container.querySelectorAll(`[data-${attribute}]`).forEach((tab) => {
+    const selected = tab.dataset[attribute] === activeValue;
     tab.setAttribute("aria-selected", String(selected));
     tab.tabIndex = selected ? 0 : -1;
   });
+}
+
+function renderScriptTabs() {
+  renderTabs(scriptTabs, "script", activeScriptId);
+}
+
+function setHeader(title, intro) {
+  pageTitle.textContent = title;
+  pageIntro.textContent = intro;
+}
+
+function setModeTabsVisible(visible) {
+  modeTabs.hidden = !visible;
+}
+
+const reading = createReadingMode({
+  storages,
+  preferences,
+  setHeader,
+  setModeTabsVisible
+});
+
+function showMode() {
+  renderTabs(modeTabs, "mode", activeMode);
+  if (activeMode === "read") {
+    setupScreen.hidden = true;
+    practiceScreen.hidden = true;
+    reading.showSetup();
+  } else {
+    reading.hide();
+    showSetup();
+  }
 }
 
 function getSelectedCount(selection) {
@@ -132,9 +167,8 @@ function renderSetup() {
 function showSetup() {
   setupScreen.hidden = false;
   practiceScreen.hidden = true;
-  pageTitle.textContent = `Choose your ${activeScript().name.toLowerCase()}`;
-  pageIntro.textContent =
-    "Mark characters you know and characters you want to learn. You can change this selection whenever you like.";
+  setModeTabsVisible(true);
+  setHeader(strings.modes.writeTitle(activeScript().name), strings.modes.writeIntro);
   renderSetup();
 }
 
@@ -181,6 +215,7 @@ function startWord() {
   }
   setupScreen.hidden = true;
   practiceScreen.hidden = false;
+  setModeTabsVisible(false);
   pageTitle.textContent = "Practice Japanese writing";
   pageIntro.textContent =
     "Write each character in order. The Japanese word stays hidden until you submit.";
@@ -270,7 +305,7 @@ startButton.addEventListener("click", async () => {
   if (!schedulers[activeScriptId]) {
     setupMessage.textContent = "Loading word list...";
     try {
-      const words = await loadWords(activeScript().wordsUrl);
+      const words = await loadScriptWords(activeScript());
       schedulers[activeScriptId] = createScheduler(words);
     } catch (error) {
       setupMessage.textContent = error.message;
@@ -322,17 +357,29 @@ scriptTabs.addEventListener("click", (event) => {
   showSetup();
 });
 
-scriptTabs.addEventListener("keydown", (event) => {
-  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-  const tabs = [...scriptTabs.querySelectorAll("[data-script]")];
-  const index = tabs.findIndex((tab) => tab.dataset.script === activeScriptId);
-  const next = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
-  next.click();
-  next.focus();
+modeTabs.addEventListener("click", (event) => {
+  const tab = event.target.closest("[data-mode]");
+  if (!tab || tab.dataset.mode === activeMode) return;
+  activeMode = tab.dataset.mode;
+  preferences.setMode(activeMode);
+  showMode();
 });
+
+// Arrow keys move between tabs in a tab list.
+for (const tabList of [scriptTabs, modeTabs]) {
+  tabList.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const tabs = [...tabList.querySelectorAll("[role='tab']")];
+    const index = tabs.findIndex((tab) => tab.getAttribute("aria-selected") === "true");
+    const step = event.key === "ArrowRight" ? 1 : tabs.length - 1;
+    const next = tabs[(index + step) % tabs.length];
+    next.click();
+    next.focus();
+  });
+}
 
 backButton.addEventListener("click", showSetup);
 
 learningOnlyLabel.textContent = strings.practiceMode.learningOnly;
 
-showSetup();
+showMode();

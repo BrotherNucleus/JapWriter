@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Practice writing Japanese characters by hand.">
     <title>Japanese Writing Practice</title>
-    <link rel="stylesheet" href="./css/styles.css?v=katakana-1">
+    <link rel="stylesheet" href="./css/styles.css?v=reading-1">
   </head>
   <body>
     <main class="app-shell">
@@ -17,6 +17,11 @@
           change this selection whenever you like.
         </p>
       </header>
+
+      <div id="mode-tabs" class="mode-tabs" role="tablist" aria-label="Practice mode">
+        <button type="button" role="tab" data-mode="write" aria-selected="true">Write</button>
+        <button type="button" role="tab" data-mode="read" aria-selected="false" tabindex="-1">Read</button>
+      </div>
 
       <section id="setup-screen" class="card setup-card" aria-labelledby="setup-title">
         <div id="script-tabs" class="script-tabs" role="tablist" aria-label="Writing system">
@@ -87,20 +92,85 @@
           </aside>
         </div>
       </section>
+
+      <section id="read-setup-screen" class="card setup-card" aria-labelledby="read-setup-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Setup</p>
+            <h2 id="read-setup-title">Reading setup</h2>
+          </div>
+          <p id="read-setup-status" class="status" role="status"></p>
+        </div>
+
+        <fieldset id="read-source-choice" class="segmented-choice">
+          <legend>Read words written in</legend>
+          <label><input type="radio" name="read-source" value="hiragana"><span>Hiragana</span></label>
+          <label><input type="radio" name="read-source" value="katakana"><span>Katakana</span></label>
+          <label><input type="radio" name="read-source" value="both"><span>Both</span></label>
+        </fieldset>
+        <p class="read-setup-note">
+          Words use only the characters you marked as known or learning in Write mode.
+        </p>
+
+        <div class="setup-footer">
+          <p id="read-setup-message" class="status" role="status"></p>
+          <div class="setup-actions">
+            <label class="mode-switch" for="read-learning-only-toggle">
+              <input id="read-learning-only-toggle" type="checkbox" role="switch">
+              <span class="mode-switch-track" aria-hidden="true"></span>
+              <span>Only words with learning characters</span>
+            </label>
+            <button id="read-start-button" type="button" class="primary-button" disabled>Start reading</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="read-practice-screen" class="card practice-card" aria-labelledby="read-practice-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Reading</p>
+            <h2 id="read-practice-title">What does this say?</h2>
+          </div>
+          <button id="read-back-button" class="secondary-button" type="button">Change settings</button>
+        </div>
+
+        <p id="read-word" class="read-word" lang="ja"></p>
+
+        <form id="read-form" class="read-form" autocomplete="off">
+          <label for="read-answer" class="visually-hidden">Reading in romaji</label>
+          <input
+            id="read-answer"
+            class="read-answer"
+            type="text"
+            inputmode="latin"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            placeholder="Type the reading in romaji"
+          >
+          <button id="read-check-button" type="submit" class="primary-button">Check</button>
+        </form>
+
+        <div id="read-feedback" class="read-feedback" role="status" hidden></div>
+        <button id="read-next-button" type="button" class="primary-button" hidden>Next word</button>
+        <p id="read-session-status" class="status"></p>
+      </section>
     </main>
     <!-- Version every module so a deploy never mixes fresh and cached files. -->
     <script type="importmap">
       {
         "imports": {
-          "./js/canvas.js": "./js/canvas.js?v=katakana-1",
-          "./js/characters.js": "./js/characters.js?v=katakana-1",
-          "./js/scheduler.js": "./js/scheduler.js?v=katakana-1",
-          "./js/storage.js": "./js/storage.js?v=katakana-1",
-          "./js/strings.js": "./js/strings.js?v=katakana-1",
-          "./js/words.js": "./js/words.js?v=katakana-1"
+          "./js/canvas.js": "./js/canvas.js?v=reading-1",
+          "./js/reading.js": "./js/reading.js?v=reading-1",
+          "./js/romaji.js": "./js/romaji.js?v=reading-1",
+          "./js/characters.js": "./js/characters.js?v=reading-1",
+          "./js/scheduler.js": "./js/scheduler.js?v=reading-1",
+          "./js/storage.js": "./js/storage.js?v=reading-1",
+          "./js/strings.js": "./js/strings.js?v=reading-1",
+          "./js/words.js": "./js/words.js?v=reading-1"
         }
       }
     </script>
-    <script type="module" src="./js/main.js?v=katakana-1"></script>
+    <script type="module" src="./js/main.js?v=reading-1"></script>
   </body>
 </html>

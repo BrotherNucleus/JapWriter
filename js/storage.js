@@ -3,6 +3,11 @@ import { CHARACTER_STATES, SCRIPTS } from "./characters.js";
 export const SELECTION_STORAGE_KEY = SCRIPTS.hiragana.storageKey;
 export const LEARNING_ONLY_STORAGE_KEY = "japwriter.learningOnly";
 export const ACTIVE_SCRIPT_STORAGE_KEY = "japwriter.activeScript";
+export const MODE_STORAGE_KEY = "japwriter.mode";
+export const READ_SOURCE_STORAGE_KEY = "japwriter.readSource";
+
+const MODES = Object.freeze(["write", "read"]);
+const READ_SOURCE_IDS = Object.freeze(["hiragana", "katakana", "both"]);
 
 function createEmptySelection(script) {
   return Object.fromEntries(
@@ -157,6 +162,26 @@ export function createPreferences(storage = globalThis.localStorage) {
         throw new Error(`Unknown script: ${scriptId}`);
       }
       save(ACTIVE_SCRIPT_STORAGE_KEY, scriptId);
+    },
+    getMode() {
+      const saved = storage.getItem(MODE_STORAGE_KEY);
+      return MODES.includes(saved) ? saved : MODES[0];
+    },
+    setMode(mode) {
+      if (!MODES.includes(mode)) {
+        throw new Error(`Unknown mode: ${mode}`);
+      }
+      save(MODE_STORAGE_KEY, mode);
+    },
+    getReadSource() {
+      const saved = storage.getItem(READ_SOURCE_STORAGE_KEY);
+      return READ_SOURCE_IDS.includes(saved) ? saved : READ_SOURCE_IDS[0];
+    },
+    setReadSource(sourceId) {
+      if (!READ_SOURCE_IDS.includes(sourceId)) {
+        throw new Error(`Unknown reading source: ${sourceId}`);
+      }
+      save(READ_SOURCE_STORAGE_KEY, sourceId);
     }
   };
 }
